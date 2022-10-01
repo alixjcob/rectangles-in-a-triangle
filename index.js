@@ -6,13 +6,13 @@ const risoColors = require('riso-colors');
 
 const settings = {
   dimensions: [1080, 1080],
-  
+  animate: true,
 };
 
 const sketch = ({context, width, height }) => {
-  let x, y, w, h;
+  let x, y, w, h, fill, stroke, blend; 
 
-  const num = 20;
+  const num = 40;
   const degrees = -30;
   const rects = []
   const rectColors =[
@@ -25,13 +25,15 @@ const bgColor= random.pick(risoColors).hex;
   for (let i = 0; i < num; i++) {
     x = random.range(0, width);
     y = random.range(0, height);
-    w = random.range(200, 600);
+    w = random.range(600, width);
     h = random.range(40, 200);
 
     fill = random.pick(rectColors).hex ;
     stroke = random.pick(rectColors).hex;
 
-    rects.push({x,y,w,h, fill, stroke});
+    blend = (random.value() > 0.5 ) ? 'over-lay' : 'source-over';
+
+    rects.push({x,y,w,h, fill, stroke, blend});
 
   }
 
@@ -41,14 +43,17 @@ const bgColor= random.pick(risoColors).hex;
     context.fillStyle = bgColor;
     context.fillRect(0, 0, width, height);
 
-    rects.forEach(rect => {
+    rects.forEach(rect => { 
       const {x,y,w,h,fill, stroke} = rect;
+      let shadowColor;
 
       context.save();
       context.translate(x, y);
       context.strokeStyle = stroke;
       context.fillStyle = fill;
       context.lineWidth = 10;
+
+      context.globalCompositeOperation = 'blend';
 
       drawSkewedRect({ context, w, h, degrees });
 
@@ -62,10 +67,16 @@ const bgColor= random.pick(risoColors).hex;
       context.fill();
       context.shadowColor = null;
       context.stroke();
+
+      context.globalCompositeOperation = 'blend';
+
+      context.lineWidth = 2;
+      context.strokeStyle = 'black';
+      context.stroke(); 
       
 
       context.restore();
-    });
+    });  
   };
 };
 
